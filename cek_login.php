@@ -6,27 +6,34 @@ if (isset($_POST['login'])) {
     $username = mysqli_real_escape_string($koneksi, $_POST['username']);
     $password = $_POST['password'];
 
-    // Cari user berdasarkan username
-    $query  = mysqli_query($koneksi, "SELECT * FROM users WHERE username='$username'");
-    $data   = mysqli_fetch_assoc($query);
+    // Cek apakah koneksi ke DB aman
+    if (!$koneksi) { die("Koneksi ke database putus!"); }
 
-    // Cek apakah user ada dan password cocok
-    if ($data && password_verify($password, $data['password'])) {
-        $_SESSION['username']    = $data['username'];
-        $_SESSION['nama_lengkap']= $data['nama_lengkap'];
-        $_SESSION['role']        = $data['role'];
+    $query = mysqli_query($koneksi, "SELECT * FROM users WHERE username='$username'");
+    $data = mysqli_fetch_assoc($query);
 
-        // Redirect ke halaman dashboard masing-masing role
-        if ($data['role'] == 'admin') {
-            header("Location: admin_users.php");
-        } elseif ($data['role'] == 'penyuluh') {
-            header("Location: penyuluh_laporan.php");
-        } else {
-            header("Location: kader_input.php");
-        }
-    } else {
-        // Jika salah, balik ke login dengan pesan error
-        header("Location: login.php?pesan=gagal");
+    // DEBUGGING START
+    if (!$data) {
+        die("Error: Username '$username' TIDAK DITEMUKAN di database. Cek penulisan di tabel users.");
     }
+
+    echo "User ditemukan! Mencoba mencocokkan password... <br>";
+    
+    if (password_verify($password, $data['password'])) {
+        echo "Password COCOK! Mengalihkan...";
+        $_SESSION['username'] = $data['username'];
+        $_SESSION['role'] = $data['role'];
+        $_SESSION['nama_lengkap'] = $data['nama_lengkap'];
+
+        // Redirect sesuai role
+        header("Location: dashboard_" . $data['role'] . ".php");
+        exit;
+    } else {
+        echo "Password SALAH! <br>";
+        echo "Password yang kamu ketik: " . $password . "<br>";
+        echo "Hash di database: " . $data['password'] . "<br>";
+        die("Pastikan kamu tidak salah ketik atau salah copy hash di phpMyAdmin.");
+    }
+    // DEBUGGING END
 }
 ?>

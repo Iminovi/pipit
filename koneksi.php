@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
-$user = "root";     // Default XAMPP
-$pass = "";         // Default XAMPP kosong
+$user = "root";     
+$pass = "";         
 $db   = "penyuluhan_kb";
 
 $koneksi = mysqli_connect($host, $user, $pass, $db);
