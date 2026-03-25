@@ -53,7 +53,7 @@ $total_kader = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as tot
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <h4 class="text-primary fw-bold">bkkbn <span class="text-success">siga</span></h4>
+        <h4 class="text-primary fw-bold">bkkbn <span class="text-success">SIREKAP MKJP</span></h4>
         <small class="text-muted">Sistem Informasi Keluarga</small>
     </div>
     <div class="nav flex-column mt-3">

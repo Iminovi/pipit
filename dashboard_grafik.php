@@ -54,7 +54,7 @@ $color_header = ($role == 'penyuluh') ? '#1a5f9f' : ($role == 'admin' ? '#1a4d8f
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <h4 class="text-primary fw-bold">bkkbn <span class="text-success">siga</span></h4>
+        <h4 class="text-primary fw-bold">bkkbn <span class="text-success">SIREKAP MKJP</span></h4>
         <small class="text-muted">Sistem Informasi Keluarga</small>
     </div>
     <div class="nav flex-column mt-3">

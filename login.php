@@ -36,7 +36,7 @@ if (isset($_POST['login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SIGA Sistem Informasi Keluarga</title>
+    <title>Login - SIREKAP MKJP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     
@@ -278,7 +278,7 @@ if (isset($_POST['login'])) {
             <div class="login-image-logo">
                 <span class="material-symbols-outlined" style="font-size: 60px; color: #1a5da4;">family_restroom</span>
             </div>
-            <h3>SIGA</h3>
+            <h3>SIREKAP MKJP</h3>
             <p>Sistem Informasi Keluarga</p>
             <p style="margin-top: 20px; font-size: 12px; opacity: 0.8;">Kementerian Kependudukan dan Pembangunan Keluarga</p>
         </div>
@@ -288,8 +288,8 @@ if (isset($_POST['login'])) {
         <div class="login-box">
             <div class="login-box-header">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/Logo_BKKBN.png" alt="Logo BKKBN" class="logo-bkkbn">
-                <h5>SIGA</h5>
-                <p>Sistem Informasi Keluarga</p>
+                <h5>SIREKAP MKJP</h5>
+                <p>Sistem informasi registrasi kader pembawa aseptor metode kontrasepsi jangka panjang/p>
                 <p style="font-size: 12px; color: #999;">Silakan masuk ke akun Anda</p>
             </div>
 

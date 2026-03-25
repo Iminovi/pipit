@@ -32,7 +32,7 @@ $query = mysqli_query($koneksi, $sql);
 
 <center>
     <h2>LAPORAN DATA HASIL PENDATAAN KELUARGA BERENCANA</h2>
-    <p><b>BKKBN - Sistem Informasi Keluarga (SIGA)</b></p>
+    <p><b>BKKBN - Sistem Informasi Keluarga (SIREKAP MKJP)</b></p>
     <p>Laporan Diunduh: <b><?= date('d/m/Y H:i:s'); ?></b></p>
     <?php if($f_lokasi != '') echo "<p>Filter Lokasi: <b>$f_lokasi</b></p>"; ?>
     <?php if($tgl_awal != '') echo "<p>Periode: <b>" . date('d/m/Y', strtotime($tgl_awal)) . "</b> s/d <b>" . date('d/m/Y', strtotime($tgl_akhir)) . "</b></p>"; ?>
