@@ -113,6 +113,11 @@ $color_header = ($role == 'penyuluh') ? '#1a5f9f' : ($role == 'admin' ? '#1a4d8f
             </a>
         <?php endif; ?>
         
+        <div class="section-header">AKUN</div>
+        <a href="profil.php" class="nav-link">
+            <span class="material-symbols-outlined">person</span> Profil Saya
+        </a>
+        
         <a href="logout.php" class="nav-link mt-5 text-danger">
             <span class="material-symbols-outlined">logout</span> Keluar
         </a>

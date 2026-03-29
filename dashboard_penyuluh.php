@@ -73,6 +73,11 @@ $total_kader = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as tot
             <span class="material-symbols-outlined">download</span> Download Excel
         </a>
         
+        <div class="section-header">AKUN</div>
+        <a href="profil.php" class="nav-link">
+            <span class="material-symbols-outlined">person</span> Profil Saya
+        </a>
+        
         <a href="logout.php" class="nav-link mt-5 text-danger">
             <span class="material-symbols-outlined">logout</span> Keluar
         </a>

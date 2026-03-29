@@ -13,7 +13,19 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Ambil data terakhir yang pernah diinput oleh kader ini untuk fitur Otomatis Isi
+$user_kader = $_SESSION['username'];
+$query_profil = mysqli_query($koneksi, "SELECT nik_kader, suami_kader, nik_suami_kader, norek_kader FROM warga_kb WHERE kader_penginput='" . $_SESSION['nama_lengkap'] . "' ORDER BY id DESC LIMIT 1");
+$profil_lama = mysqli_fetch_assoc($query_profil);
+
+// Jika belum pernah input, biarkan kosong
+$nik_k = $profil_lama['nik_kader'] ?? '';
+$suami_k = $profil_lama['suami_kader'] ?? '';
+$nik_s_k = $profil_lama['nik_suami_kader'] ?? '';
+$norek_k = $profil_lama['norek_kader'] ?? '';
+
 if (isset($_POST['simpan_data'])) {
+    // Data Warga
     $istri  = mysqli_real_escape_string($koneksi, $_POST['nama_istri']);
     $suami  = mysqli_real_escape_string($koneksi, $_POST['nama_suami']);
     $anak   = $_POST['jumlah_anak'];
@@ -21,7 +33,13 @@ if (isset($_POST['simpan_data'])) {
     $tgl    = $_POST['tanggal'];
     $ket    = mysqli_real_escape_string($koneksi, $_POST['keterangan']);
     $lokasi = mysqli_real_escape_string($koneksi, $_POST['lokasi']);
-    $kader  = $_SESSION['username']; 
+    $kader  = $_SESSION['nama_lengkap'];
+    
+    // Data Diri Kader (Tambahan Baru)
+    $nik_kader   = mysqli_real_escape_string($koneksi, $_POST['nik_kader']);
+    $suami_kader = mysqli_real_escape_string($koneksi, $_POST['suami_kader']);
+    $nik_sk      = mysqli_real_escape_string($koneksi, $_POST['nik_suami_kader']);
+    $norek       = mysqli_real_escape_string($koneksi, $_POST['norek_kader']);
     
     // Logika Upload Foto
     $nama_foto_baru = ""; // Default jika tidak upload
@@ -36,9 +54,9 @@ if (isset($_POST['simpan_data'])) {
         move_uploaded_file($tmp, $path);
     }
 
-    // Satu Query untuk semua data
-    $sql = "INSERT INTO warga_kb (nama_istri, nama_suami, jumlah_anak, metode_kontrasepsi, lokasi, tanggal_kunjungan, kader_penginput, keterangan, foto_kunjungan) 
-            VALUES ('$istri', '$suami', '$anak', '$kb', '$lokasi', '$tgl', '$kader', '$ket', '$nama_foto_baru')";
+    // Satu Query untuk semua data (termasuk data kader)
+    $sql = "INSERT INTO warga_kb (nama_istri, nama_suami, jumlah_anak, metode_kontrasepsi, lokasi, tanggal_kunjungan, kader_penginput, keterangan, foto_kunjungan, nik_kader, suami_kader, nik_suami_kader, norek_kader) 
+            VALUES ('$istri', '$suami', '$anak', '$kb', '$lokasi', '$tgl', '$kader', '$ket', '$nama_foto_baru', '$nik_kader', '$suami_kader', '$nik_sk', '$norek')";
     
     if (mysqli_query($koneksi, $sql)) {
         echo "<script>alert('Data Warga Berhasil Disimpan!'); window.location='dashboard_kader.php';</script>";
@@ -106,6 +124,11 @@ if (isset($_POST['simpan_data'])) {
             <span class="material-symbols-outlined">summarize</span> Laporan Umum
         </a>
         
+        <div class="section-header">AKUN</div>
+        <a href="profil.php" class="nav-link">
+            <span class="material-symbols-outlined">person</span> Profil Saya
+        </a>
+        
         <a href="logout.php" class="nav-link mt-5 text-danger">
             <span class="material-symbols-outlined">logout</span> Keluar
         </a>
@@ -132,74 +155,156 @@ if (isset($_POST['simpan_data'])) {
                 <hr>
                 
                 <form method="POST" enctype="multipart/form-data">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Nama Istri *</label>
-                                <input type="text" name="nama_istri" class="form-control" required>
+                    <!-- SECTION A: DATA WARGA -->
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                        <h6 style="color: #198754; font-weight: 700; border-bottom: 2px solid #198754; padding-bottom: 10px; margin-bottom: 15px;">
+                            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">person_2</span>
+                            A. DATA WARGA (SASARAN)
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Nama Istri *</label>
+                                    <input type="text" name="nama_istri" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Nama Suami *</label>
+                                    <input type="text" name="nama_suami" class="form-control" required>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Nama Suami *</label>
-                                <input type="text" name="nama_suami" class="form-control" required>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Jumlah Anak *</label>
+                                    <input type="number" name="jumlah_anak" class="form-control" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Metode Kontrasepsi Jangka Panjang *</label>
+                                    <select name="metode_kb" class="form-control" required>
+                                        <option value="">-- Pilih Metode MKJP --</option>
+                                        <option value="IUD">IUD (Alat Kontrasepsi Dalam Rahim)</option>
+                                        <option value="Implan">Implan / Susuk (3 tahun)</option>
+                                        <option value="MOW">MOW (Metode Operasi Wanita)</option>
+                                        <option value="MOP">MOP (Metode Operasi Pria)</option>
+                                        <option value="Tidak KB">Tidak Menggunakan KB</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Lokasi (Dusun/RW) *</label>
+                                    <input type="text" name="lokasi" class="form-control" placeholder="Contoh: Dusun Krajan RW 01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Tanggal Kunjungan *</label>
+                                    <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Keterangan Tambahan</label>
+                            <textarea name="keterangan" class="form-control" rows="2" placeholder="Catatan jika ada..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- SECTION B: DATA DIRI KADER -->
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                        <h6 style="color: #198754; font-weight: 700; border-bottom: 2px solid #198754; padding-bottom: 10px; margin-bottom: 15px;">
+                            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">badge</span>
+                            B. DATA DIRI KADER (PETUGAS)
+                        </h6>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Nama Lengkap Kader</label>
+                            <input type="text" class="form-control" value="<?= $_SESSION['nama_lengkap']; ?>" disabled style="background: #e9ecef;">
+                            <small class="text-muted">Data ini terambil dari akun Anda</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">NIK Kader *</label>
+                                    <input type="number" name="nik_kader" class="form-control" placeholder="16 digit NIK" value="<?= $nik_k; ?>" required>
+                                    <?php if(!empty($nik_k)): ?>
+                                        <small class="text-success d-block mt-1">
+                                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">check_circle</span>
+                                            Data otomatis dari input terakhir
+                                        </small>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Nomor Rekening *</label>
+                                    <input type="text" name="norek_kader" class="form-control" placeholder="Contoh: BRI - 1234567890" value="<?= $norek_k; ?>" required>
+                                    <?php if(!empty($norek_k)): ?>
+                                        <small class="text-success d-block mt-1">
+                                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">check_circle</span>
+                                            Data otomatis dari input terakhir
+                                        </small>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Nama Suami Kader *</label>
+                                    <input type="text" name="suami_kader" class="form-control" value="<?= $suami_k; ?>" required>
+                                    <?php if(!empty($suami_k)): ?>
+                                        <small class="text-success d-block mt-1">
+                                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">check_circle</span>
+                                            Data otomatis dari input terakhir
+                                        </small>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">NIK Suami Kader *</label>
+                                    <input type="number" name="nik_suami_kader" class="form-control" placeholder="16 digit NIK" value="<?= $nik_s_k; ?>" required>
+                                    <?php if(!empty($nik_s_k)): ?>
+                                        <small class="text-success d-block mt-1">
+                                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">check_circle</span>
+                                            Data otomatis dari input terakhir
+                                        </small>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Jumlah Anak *</label>
-                                <input type="number" name="jumlah_anak" class="form-control" min="0" required>
-                            </div>
+                    <!-- SECTION C: DOKUMEN -->
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                        <h6 style="color: #198754; font-weight: 700; border-bottom: 2px solid #198754; padding-bottom: 10px; margin-bottom: 15px;">
+                            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">image</span>
+                            C. DOKUMEN KUNJUNGAN
+                        </h6>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Upload Foto Kunjungan</label>
+                            <input type="file" name="foto" class="form-control" accept="image/*">
+                            <small class="text-muted d-block mt-2">Format: JPG, PNG (Max: 2MB) - Opsional</small>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Metode Kontrasepsi *</label>
-                                <select name="metode_kb" class="form-control" required>
-                                    <option value="">-- Pilih Metode --</option>
-                                    <option value="Suntik 3 Bulan">Suntik 3 Bulan</option>
-                                    <option value="Pil KB">Pil KB</option>
-                                    <option value="IUD">IUD</option>
-                                    <option value="Implan">Implan (Susuk)</option>
-                                    <option value="Kondom">Kondom</option>
-                                    <option value="MOW/MOP">MOW / MOP</option>
-                                    <option value="Tidak KB">Tidak KB</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Lokasi (Dusun/RW) *</label>
-                                <input type="text" name="lokasi" class="form-control" placeholder="Contoh: Dusun Krajan RW 01" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Tanggal Kunjungan *</label>
-                                <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Upload Foto Kunjungan</label>
-                        <input type="file" name="foto" class="form-control" accept="image/*">
-                        <small class="text-muted d-block mt-2">Format: JPG, PNG (Max: 2MB)</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Keterangan Tambahan</label>
-                        <textarea name="keterangan" class="form-control" rows="3" placeholder="Catatan jika ada..."></textarea>
                     </div>
 
                     <button type="submit" name="simpan_data" class="btn-submit">
                         <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">save</span>
-                        Simpan Data Warga
+                        Simpan Pendataan
                     </button>
                     
                     <a href="dashboard_kader.php" class="btn-back">

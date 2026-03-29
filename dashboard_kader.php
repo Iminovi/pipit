@@ -79,6 +79,11 @@ $info_terakhir = mysqli_fetch_assoc($last_entry);
             <span class="material-symbols-outlined">summarize</span> Laporan Umum
         </a>
         
+        <div class="section-header">AKUN</div>
+        <a href="profil.php" class="nav-link">
+            <span class="material-symbols-outlined">person</span> Profil Saya
+        </a>
+        
         <a href="logout.php" class="nav-link mt-5 text-danger">
             <span class="material-symbols-outlined">logout</span> Keluar
         </a>

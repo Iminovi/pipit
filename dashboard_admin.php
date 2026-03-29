@@ -12,6 +12,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
 $total_user = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as total FROM users"))['total'];
 $total_data = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as total FROM warga_kb"))['total'];
 $total_kader = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as total FROM users WHERE role='kader'"))['total'];
+
+// Hitung total honor yang belum dibayar (status_bayar = 0)
+$tarif_per_data = 5000;
+$honor_result = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as total FROM warga_kb WHERE status_bayar = 0"));
+$total_honor_unpaid = $honor_result['total'] * $tarif_per_data;
 ?>
 
 <!DOCTYPE html>
@@ -63,6 +68,9 @@ $total_kader = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as tot
         <a href="admin_users.php" class="nav-link">
             <span class="material-symbols-outlined">group</span> User Management
         </a>
+        <a href="admin_rekap_honor.php" class="nav-link">
+            <span class="material-symbols-outlined">payments</span> Rekap Honor Kader
+        </a>
         
         <div class="section-header">LAPORAN</div>
         <a href="penyuluh_laporan.php" class="nav-link">
@@ -70,6 +78,11 @@ $total_kader = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as tot
         </a>
         <a href="dashboard_grafik.php" class="nav-link">
             <span class="material-symbols-outlined">bar_chart</span> Statistik Grafik
+        </a>
+        
+        <div class="section-header">AKUN</div>
+        <a href="profil.php" class="nav-link">
+            <span class="material-symbols-outlined">person</span> Profil Saya
         </a>
         
         <a href="logout.php" class="nav-link mt-5 text-danger">
@@ -89,25 +102,32 @@ $total_kader = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) as tot
 
     <div class="container-fluid">
         <div class="row mb-4">
-            <div class="col-md-4 mb-3">
+            <div class="col-md-3 mb-3">
                 <div class="stat-box stat-primary">
                     <span class="material-symbols-outlined" style="font-size: 40px;">groups</span>
                     <h3><?= $total_user; ?></h3>
                     <p>Total Pengguna Sistem</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-3 mb-3">
                 <div class="stat-box stat-success">
                     <span class="material-symbols-outlined" style="font-size: 40px;">home_work</span>
                     <h3><?= $total_data; ?></h3>
                     <p>Total Data Warga Terinput</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-3 mb-3">
                 <div class="stat-box stat-warning">
                     <span class="material-symbols-outlined" style="font-size: 40px;">person</span>
                     <h3><?= $total_kader; ?></h3>
                     <p>Kader Aktif</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-box" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);">
+                    <span class="material-symbols-outlined" style="font-size: 40px;">payments</span>
+                    <h3 style="font-size: 24px;">Rp<?= number_format($total_honor_unpaid / 1000000, 1, ',', '.'); ?>jt</h3>
+                    <p>Honor Belum Dibayar</p>
                 </div>
             </div>
         </div>

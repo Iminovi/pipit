@@ -70,6 +70,11 @@ $query = mysqli_query($koneksi, "SELECT * FROM users ORDER BY role ASC");
             <span class="material-symbols-outlined">bar_chart</span> Statistik Grafik
         </a>
         
+        <div class="section-header">AKUN</div>
+        <a href="profil.php" class="nav-link">
+            <span class="material-symbols-outlined">person</span> Profil Saya
+        </a>
+        
         <a href="logout.php" class="nav-link mt-5 text-danger">
             <span class="material-symbols-outlined">logout</span> Keluar
         </a>
@@ -119,6 +124,9 @@ $query = mysqli_query($koneksi, "SELECT * FROM users ORDER BY role ASC");
                                 </span>
                             </td>
                             <td>
+                                <a href="admin_reset_pw.php?id=<?= $row['id']; ?>" 
+   class="btn btn-sm btn-warning" 
+   onclick="return confirm('Reset password user ini menjadi: 123456?')">Reset PW</a>
                                 <a href="user_hapus.php?id=<?= $row['id']; ?>" class="btn-delete" onclick="return confirm('Yakin ingin menghapus user ini?')">
                                     <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
                                     Hapus

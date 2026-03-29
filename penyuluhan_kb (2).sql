@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 25, 2026 at 12:41 PM
+-- Generation Time: Mar 29, 2026 at 11:11 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.12
 
@@ -66,7 +66,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `role`) VALUE
 (9, 'mm', '$2y$10$fol6BoJe1OoeP3A2H3v4NOni4tHghxdfKfKDh6fVnyen.woO917tu', 'nnn', 'kader'),
 (11, 'admin', '$2y$10$mptYaCFmRrCEZL2Obxu3D.TktW7sQLdPF9csgPU1jii7.fRarPUqi', 'Administrator Utama', 'admin'),
 (12, 'ss', '$2y$10$ZPhqwsMmiFg14C2eOBFmc.urq4SIIcuCQQ6yg8QfdiCCAHdR5woHu', 'ss', 'penyuluh'),
-(13, 'sas', '$2y$10$dgazYC3ezHAzS/YkW91nzOf1w/Wx3uArcbe2bsXsneX0gdgf0IMzi', 'sas', 'kader');
+(13, 'sas', '$2y$10$m/ELfeKO3pQCoLmF1DkjluNR93uTf93KMUC54yEVU323IUOKtDxBy', 'sasa', 'kader');
 
 -- --------------------------------------------------------
 
@@ -83,20 +83,14 @@ CREATE TABLE `warga_kb` (
   `lokasi` varchar(100) DEFAULT NULL,
   `tanggal_kunjungan` date DEFAULT NULL,
   `kader_penginput` varchar(50) DEFAULT NULL,
+  `nik_kader` varchar(16) DEFAULT NULL,
+  `suami_kader` varchar(100) DEFAULT NULL,
+  `nik_suami_kader` varchar(16) DEFAULT NULL,
+  `norek_kader` varchar(50) DEFAULT NULL,
+  `status_bayar` tinyint(1) DEFAULT 0,
   `keterangan` text DEFAULT NULL,
   `foto_kunjungan` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `warga_kb`
---
-
-INSERT INTO `warga_kb` (`id`, `nama_istri`, `nama_suami`, `jumlah_anak`, `metode_kontrasepsi`, `lokasi`, `tanggal_kunjungan`, `kader_penginput`, `keterangan`, `foto_kunjungan`) VALUES
-(1, 'nnn', 'nn', 2, 'Implan', NULL, '2026-03-15', 'mm', 'nnnn', NULL),
-(2, 'as', 'sa', 2, 'Kondom', NULL, '2026-03-24', 'sas', 'sas', NULL),
-(3, 'as', 'sa', 2, 'Suntik', NULL, '2026-03-24', 'sas', 'sas', NULL),
-(4, 'as', 'sa', 2, 'Kondom', NULL, '2026-03-24', 'sas', 'sas', NULL),
-(5, 'ss', 'aa', 6, 'Pil KB', 'saasasas', '2026-03-24', 'sas', 'as', '24032026095906_images (6).jpeg');
 
 --
 -- Indexes for dumped tables
