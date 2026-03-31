@@ -41,132 +41,39 @@ if (isset($_POST['login'])) {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     
     <style>
-        body, html { 
-            height: 100%; 
-            margin: 0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f5f5f5;
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .login-container { 
-            display: flex; 
-            height: 100vh; 
+            background: white; 
+            border-radius: 10px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+            padding: 40px; 
             width: 100%; 
-            background: white;
+            max-width: 400px; 
         }
 
-        /* Sisi Kiri: Gambar Background */
-        .login-image {
-            flex: 1.2;
-            background: linear-gradient(135deg, #1a5da4 0%, #0d3d7d 100%);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            padding: 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        .login-header { 
+            text-align: center; 
+            margin-bottom: 30px; 
         }
 
-        .login-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,170.7C384,181,480,171,576,160C672,149,768,139,864,144C960,149,1056,171,1152,176C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-            background-size: cover;
-        }
-
-        .login-image-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .login-image-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .login-image h3 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .login-image p {
-            font-size: 14px;
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-
-        /* Sisi Kanan: Form Login */
-        .login-form-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            background-color: white;
-        }
-
-        .login-box { 
-            width: 100%; 
-            max-width: 420px; 
-        }
-        
-        .login-box-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo-bkkbn { 
-            width: 90px; 
-            height: 90px;
-            margin-bottom: 15px;
-            object-fit: contain;
-        }
-
-        .login-box-header h5 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a5da4;
-            margin-bottom: 5px;
-        }
-
-        .login-box-header p {
-            font-size: 13px;
-            color: #666;
-        }
-        
-        .form-group {
-            margin-bottom: 18px;
-        }
-        
-        .form-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .login-header h2 { 
+            color: #667eea; 
+            font-weight: bold; 
         }
 
         .form-control {
-            padding: 11px 12px;
-            border-radius: 6px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 12px;
             border: 1px solid #ddd;
             font-size: 14px;
             transition: all 0.3s;
@@ -176,15 +83,6 @@ if (isset($_POST['login'])) {
             border-color: #1a5da4;
             box-shadow: 0 0 0 0.2rem rgba(26, 93, 164, 0.15);
             outline: none;
-        }
-
-        .form-check {
-            margin-top: 15px;
-        }
-
-        .form-check-label {
-            font-size: 13px;
-            margin-left: 5px;
         }
 
         .btn-primary-custom {
@@ -253,93 +151,94 @@ if (isset($_POST['login'])) {
             line-height: 1.5;
         }
 
-        @media (min-width: 992px) {
-            .login-image { 
-                display: flex;
-            }
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
         }
 
-        @media (max-width: 991px) {
-            .login-container {
-                flex-direction: column;
+        .register-link p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .btn-register-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #28a745;
+            color: white;
+            padding: 11px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-register-custom:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        @media (max-width: 480px) {
+            .login-container { 
+                padding: 20px; 
+                margin: 15px; 
             }
-            
-            .login-form-section {
-                flex: 1;
+            .login-header h2 { 
+                font-size: 24px; 
             }
         }
     </style>
 </head>
 <body>
-
 <div class="login-container">
-    <div class="login-image">
-        <div class="login-image-content">
-            <div class="login-image-logo">
-                <span class="material-symbols-outlined" style="font-size: 60px; color: #1a5da4;">family_restroom</span>
-            </div>
-            <h3>SIREKAP MKJP</h3>
-            <p>Sistem Informasi Keluarga</p>
-            <p style="margin-top: 20px; font-size: 12px; opacity: 0.8;">Kementerian Kependudukan dan Pembangunan Keluarga</p>
+    <div class="login-header">
+        <h2>SIREKAP MKJP</h2>
+        <p class="text-muted">Sistem Informasi Keluarga Berencana</p>
+    </div>
+    <?php if(!empty($error)): ?>
+        <div class="alert-error">
+            <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
+            <?= $error; ?>
         </div>
+    <?php endif; ?>
+
+    <form method="POST">
+        <input type="text" class="form-control" name="username" placeholder="ID Pengguna" required>
+        <input type="password" class="form-control" name="password" placeholder="Kata Sandi" required>
+        <button type="submit" name="login" class="btn-primary-custom">
+            <span class="material-symbols-outlined" style="font-size: 20px;">login</span>
+            MASUK
+        </button>
+    </form>
+
+    <div class="register-link">
+        <p>Belum punya akun Kader?</p>
+        <a href="register.php" class="btn-register-custom">
+            <span class="material-symbols-outlined" style="font-size: 18px;">person_add</span>
+            Daftar Akun Kader
+        </a>
     </div>
 
-    <div class="login-form-section">
-        <div class="login-box">
-            <div class="login-box-header">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/Logo_BKKBN.png" alt="Logo BKKBN" class="logo-bkkbn">
-                <h5>SIREKAP MKJP</h5>
-                <p>Sistem informasi registrasi kader pembawa aseptor metode kontrasepsi jangka panjang/p>
-                <p style="font-size: 12px; color: #999;">Silakan masuk ke akun Anda</p>
-            </div>
+    <div class="demo-info">
+        <strong>🔐 Akun Demo:</strong>
+        <p><b>Admin:</b> admin / password</p>
+        <p><b>Penyuluh:</b> penyuluh / password</p>
+        <p><b>Kader:</b> kader / password</p>
+    </div>
 
-            <?php if(!empty($error)): ?>
-                <div class="alert-error">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">error</span>
-                    <?= $error; ?>
-                </div>
-            <?php endif; ?>
-
-            <form method="POST">
-                <div class="form-group">
-                    <label class="form-label">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">account_circle</span>
-                        ID Pengguna
-                    </label>
-                    <input type="text" name="username" class="form-control" placeholder="Masukkan ID Pengguna" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">lock</span>
-                        Kata Sandi
-                    </label>
-                    <input type="password" name="password" class="form-control" placeholder="Masukkan Kata Sandi" required>
-                </div>
-
-                <div class="form-check small">
-                    <input class="form-check-input" type="checkbox" id="remember">
-                    <label class="form-check-label text-muted" for="remember">Ingatkan Saya</label>
-                </div>
-
-                <button type="submit" name="login" class="btn-primary-custom">
-                    <span class="material-symbols-outlined" style="font-size: 20px;">login</span>
-                    MASUK
-                </button>
-            </form>
-
-            <div class="demo-info">
-                <strong>🔐 Akun Demo:</strong>
-                <p><b>Admin:</b> admin / password</p>
-                <p><b>Penyuluh:</b> penyuluh / password</p>
-                <p><b>Kader:</b> kader / password</p>
-            </div>
-
-            <div class="login-footer">
-                <p>Copyright © 2024</p>
-                <p>Kementerian Kependudukan dan Pembangunan Keluarga / BKKBN</p>
-            </div>
-        </div>
+    <div class="login-footer">
+        <p>Copyright © 2024</p>
+        <p>Kementerian Kependudukan dan Pembangunan Keluarga / BKKBN</p>
     </div>
 </div>
 

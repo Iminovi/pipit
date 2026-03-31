@@ -20,33 +20,30 @@ $query = mysqli_query($koneksi, "SELECT * FROM warga_kb WHERE kader_penginput='$
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     
     <style>
-        body { background-color: #f8f9fa; font-size: 0.9rem; }
-        .sidebar { width: 260px; height: 100vh; background: #fff; border-right: 1px solid #dee2e6; position: fixed; overflow-y: auto; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #f1f1f1; text-align: center; }
-        .sidebar-header h4 { margin: 0; font-size: 18px; }
-        .nav-link { color: #333; display: flex; align-items: center; padding: 12px 20px; border-left: 4px solid transparent; transition: 0.3s; }
-        .nav-link:hover, .nav-link.active { background: #eef3ff; color: #198754; border-left-color: #198754; }
-        .nav-link span { margin-right: 10px; font-size: 20px; }
-        .nav-link.text-danger:hover { background: #ffe0e0; }
-        
+        body { background-color: #f8f9fa; margin: 0; }
+        .sidebar { width: 260px; height: 100vh; background: #fff; border-right: 1px solid #dee2e6; position: fixed; overflow-y: auto; z-index: 1000; transition: transform 0.3s; }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #f1f1f1; }
+        .sidebar-header h4 { margin: 0; font-size: 18px; color: #198754; }
+        .nav-link { color: #333; display: flex; align-items: center; padding: 12px 20px; border-left: 4px solid transparent; transition: 0.3s; text-decoration: none; }
+        .nav-link:hover { background: #e8f5e9; color: #198754; border-left-color: #198754; }
+        .nav-link span { margin-right: 10px; }
+        .top-navbar { background: #fff; padding: 12px 30px; border-bottom: 1px solid #dee2e6; margin-left: 260px; display: flex; justify-content: space-between; align-items: center; }
+        .hamburger-btn { display: none; background: #198754; color: white; border: none; padding: 8px 12px; border-radius: 6px; }
         .main-content { margin-left: 260px; padding: 20px; }
-        .top-navbar { background: #fff; padding: 10px 30px; border-bottom: 1px solid #dee2e6; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .table-card { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .table-header { background: #1a7d3d; color: white; padding: 20px; border-radius: 10px 10px 0 0; }
-        .table-body { padding: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; font-weight: 600; color: #333; padding: 12px; border-bottom: 2px solid #dee2e6; }
-        td { padding: 12px; border-bottom: 1px solid #dee2e6; }
-        tr:hover { background: #f8f9fa; }
-        .btn-edit { background: #0d6efd; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-edit:hover { background: #0b5ed7; }
-        .section-header { color: #495057; font-size: 13px; font-weight: 600; text-transform: uppercase; padding: 10px 20px 5px; margin-top: 15px; }
-        .empty-message { text-align: center; padding: 40px; color: #999; }
+        table { width: 100%; }
+        th { background: #198754; color: white; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 100%; max-width: 260px; }
+            .sidebar.active { transform: translateX(0); }
+            .top-navbar { margin-left: 0; flex-wrap: wrap; }
+            .main-content { margin-left: 0; padding: 15px; }
+            .hamburger-btn { display: flex; }
+        }
     </style>
 </head>
 <body>
-
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <h4 class="text-success fw-bold">bkkbn <span class="text-success">SIREKAP MKJP</span></h4>
         <small class="text-muted">Sistem Informasi Keluarga</small>
@@ -79,63 +76,52 @@ $query = mysqli_query($koneksi, "SELECT * FROM warga_kb WHERE kader_penginput='$
     </div>
 </div>
 
-<div class="main-content">
-    <div class="top-navbar">
-        <h5 class="mb-0">Riwayat Pendataan Saya</h5>
-        <div class="d-flex align-items-center">
-            <span class="me-2 text-muted"><?= $_SESSION['nama_lengkap']; ?></span>
-            <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['nama_lengkap']); ?>&background=198754&color=fff" width="35" class="rounded-circle">
-        </div>
-    </div>
+<div class="top-navbar">
+    <button class="hamburger-btn" id="hamburgerBtn">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+    <h5 class="mb-0">Data Saya</h5>
+    <span class="ms-auto">User: <?= $_SESSION['nama_lengkap'] ?? 'Kader' ?></span>
+</div>
 
-    <div class="container-fluid">
-        <div class="card table-card">
-            <div class="table-header">
-                <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 10px; font-size: 24px;">history</span>
-                Data Warga yang Telah Diinput
-            </div>
-            <div class="table-body">
-                <?php if(mysqli_num_rows($query) > 0): ?>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Nama Istri / Suami</th>
-                                <th>Lokasi</th>
-                                <th>Metode KB</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php $no=1; while($row = mysqli_fetch_assoc($query)): ?>
-                            <tr>
-                                <td><?= $no++; ?></td>
-                                <td><?= date('d/m/Y', strtotime($row['tanggal_kunjungan'])); ?></td>
-                                <td><strong><?= $row['nama_istri']; ?></strong> / <?= $row['nama_suami']; ?></td>
-                                <td><?= $row['lokasi']; ?></td>
-                                <td><span class="badge bg-success"><?= $row['metode_kontrasepsi']; ?></span></td>
-                                <td>
-                                    <a href="edit_data.php?id=<?= $row['id']; ?>" class="btn-edit">
-                                        <span class="material-symbols-outlined" style="font-size: 16px;">edit</span>
-                                        Edit
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <div class="empty-message">
-                        <span class="material-symbols-outlined" style="font-size: 60px; color: #ddd;">inbox</span>
-                        <p>Belum ada data yang diinput.</p>
-                    </div>
-                <?php endif; ?>
+<div class="main-content">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Data Input Saya</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Lokasi</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $no=1; while($r=mysqli_fetch_assoc($query)) { ?>
+                        <tr>
+                            <td><?=$no++?></td>
+                            <td><?=$r['lokasi']?></td>
+                            <td><?=$r['tanggal_kunjungan']?></td>
+                            <td>
+                                <a href="edit_data.php?id=<?=$r['id']?>" class="btn btn-sm btn-info">Edit</a>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('hamburgerBtn').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('active'));
+    document.querySelector('.main-content').addEventListener('click', () => { if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active'); });
+</script>
 </body>
 </html>

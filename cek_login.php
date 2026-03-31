@@ -35,5 +35,9 @@ if (isset($_POST['login'])) {
         die("Pastikan kamu tidak salah ketik atau salah copy hash di phpMyAdmin.");
     }
     // DEBUGGING END
+    if ($data['is_active'] == 0) {
+    header("Location: login.php?pesan=pending");
+    exit;
+}
 }
 ?>

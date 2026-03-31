@@ -15,7 +15,7 @@ if (!isset($_SESSION['csrf_token'])) {
 
 // Ambil data terakhir yang pernah diinput oleh kader ini untuk fitur Otomatis Isi
 $user_kader = $_SESSION['username'];
-$query_profil = mysqli_query($koneksi, "SELECT nik_kader, suami_kader, nik_suami_kader, norek_kader FROM warga_kb WHERE kader_penginput='" . $_SESSION['nama_lengkap'] . "' ORDER BY id DESC LIMIT 1");
+$query_profil = mysqli_query($koneksi, "SELECT nik_kader, suami_kader, nik_suami_kader, norek_kader FROM warga_kb WHERE kader_penginput='" . $_SESSION['username'] . "' LIMIT 1");
 $profil_lama = mysqli_fetch_assoc($query_profil);
 
 // Jika belum pernah input, biarkan kosong
@@ -26,14 +26,16 @@ $norek_k = $profil_lama['norek_kader'] ?? '';
 
 if (isset($_POST['simpan_data'])) {
     // Data Warga
-    $istri  = mysqli_real_escape_string($koneksi, $_POST['nama_istri']);
-    $suami  = mysqli_real_escape_string($koneksi, $_POST['nama_suami']);
+    $istri     = mysqli_real_escape_string($koneksi, $_POST['nama_istri']);
+    $nik_istri = mysqli_real_escape_string($koneksi, $_POST['nik_istri']);
+    $suami     = mysqli_real_escape_string($koneksi, $_POST['nama_suami']);
+    $nik_suami = mysqli_real_escape_string($koneksi, $_POST['nik_suami']);
     $anak   = $_POST['jumlah_anak'];
     $kb     = $_POST['metode_kb'];
     $tgl    = $_POST['tanggal'];
     $ket    = mysqli_real_escape_string($koneksi, $_POST['keterangan']);
     $lokasi = mysqli_real_escape_string($koneksi, $_POST['lokasi']);
-    $kader  = $_SESSION['nama_lengkap'];
+    $kader  = $_SESSION['username'];
     
     // Data Diri Kader (Tambahan Baru)
     $nik_kader   = mysqli_real_escape_string($koneksi, $_POST['nik_kader']);
@@ -55,8 +57,8 @@ if (isset($_POST['simpan_data'])) {
     }
 
     // Satu Query untuk semua data (termasuk data kader)
-    $sql = "INSERT INTO warga_kb (nama_istri, nama_suami, jumlah_anak, metode_kontrasepsi, lokasi, tanggal_kunjungan, kader_penginput, keterangan, foto_kunjungan, nik_kader, suami_kader, nik_suami_kader, norek_kader) 
-            VALUES ('$istri', '$suami', '$anak', '$kb', '$lokasi', '$tgl', '$kader', '$ket', '$nama_foto_baru', '$nik_kader', '$suami_kader', '$nik_sk', '$norek')";
+    $sql = "INSERT INTO warga_kb (nama_istri, nik_istri, nama_suami, nik_suami, jumlah_anak, metode_kontrasepsi, lokasi, tanggal_kunjungan, kader_penginput, keterangan, foto_kunjungan, nik_kader, suami_kader, nik_suami_kader, norek_kader) 
+            VALUES ('$istri', '$nik_istri', '$suami', '$nik_suami', '$anak', '$kb', '$lokasi', '$tgl', '$kader', '$ket', '$nama_foto_baru', '$nik_kader', '$suami_kader', '$nik_sk', '$norek')";
     
     if (mysqli_query($koneksi, $sql)) {
         echo "<script>alert('Data Warga Berhasil Disimpan!'); window.location='dashboard_kader.php';</script>";
@@ -171,8 +173,23 @@ if (isset($_POST['simpan_data'])) {
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label class="form-label">NIK Istri *</label>
+                                    <input type="number" name="nik_istri" class="form-control" placeholder="16 digit NIK" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label class="form-label">Nama Suami *</label>
                                     <input type="text" name="nama_suami" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">NIK Suami *</label>
+                                    <input type="number" name="nik_suami" class="form-control" placeholder="16 digit NIK" required>
                                 </div>
                             </div>
                         </div>

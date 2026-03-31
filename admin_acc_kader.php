@@ -2,31 +2,16 @@
 session_start();
 include 'koneksi.php';
 
-// Proteksi: Hanya Admin atau Penyuluh
-if ($_SESSION['role'] != 'admin' && $_SESSION['role'] != 'penyuluh') {
-    header("Location: login.php");
-    exit;
+if ($_SESSION['role'] != 'admin') { header("Location: login.php"); exit; }
+
+// Proses Aktivasi
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    mysqli_query($koneksi, "UPDATE users SET is_active=1 WHERE id='$id'");
+    header("Location: admin_acc_kader.php");
 }
 
-// 1. Ambil data filter dari URL (Default: bulan & tahun sekarang)
-$bulan_filter = isset($_GET['bulan']) ? $_GET['bulan'] : date('m');
-$tahun_filter = isset($_GET['tahun']) ? $_GET['tahun'] : date('Y');
-
-$tarif_per_data = 5000; // Contoh tarif Rp5.000
-
-// 2. Query dengan Filter Tanggal (MONTH dan YEAR)
-$sql = "SELECT 
-            kader_penginput, 
-            nik_kader, 
-            norek_kader, 
-            COUNT(*) as total_input 
-        FROM warga_kb 
-        WHERE MONTH(tanggal_kunjungan) = '$bulan_filter' 
-        AND YEAR(tanggal_kunjungan) = '$tahun_filter'
-        AND status_bayar = 0
-        GROUP BY kader_penginput";
-
-$query = mysqli_query($koneksi, $sql);
+$query = mysqli_query($koneksi, "SELECT * FROM users WHERE is_active=0 AND role='kader'");
 ?>
 
 <!DOCTYPE html>
@@ -34,9 +19,10 @@ $query = mysqli_query($koneksi, $sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Honor - Admin</title>
+    <title>Persetujuan Akun Kader - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
     <style>
         body { background-color: #f8f9fa; margin: 0; }
         .sidebar { width: 260px; height: 100vh; background: #fff; border-right: 1px solid #dee2e6; position: fixed; overflow-y: auto; z-index: 1000; transition: transform 0.3s; }
@@ -47,69 +33,81 @@ $query = mysqli_query($koneksi, $sql);
         .nav-link:hover { background: #eef3ff; color: #0d6efd; border-left-color: #0d6efd; }
         .nav-link span { margin-right: 10px; }
         .top-navbar { background: #fff; padding: 12px 30px; border-bottom: 1px solid #dee2e6; margin-left: 260px; display: flex; justify-content: space-between; align-items: center; }
-        .hamburger-btn { display: none; background: #0d6efd; color: white; border: none; padding: 8px 12px; border-radius: 6px; }
+        .hamburger-btn { display: none; background: #0d6efd; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         .main-content { margin-left: 260px; padding: 20px; }
         table { width: 100%; }
-        th { background: #0d6efd; color: white; }
+        th { background: #0d6efd; color: white; padding: 12px; }
+        td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+        .btn-sm { font-size: 12px; }
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); width: 100%; max-width: 260px; }
             .sidebar.active { transform: translateX(0); }
-            .top-navbar { margin-left: 0; flex-wrap: wrap; }
+            .top-navbar { margin-left: 0; flex-wrap: wrap; gap: 10px; }
             .main-content { margin-left: 0; padding: 15px; }
             .hamburger-btn { display: flex; }
         }
     </style>
 </head>
 <body>
+
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header"><h4>SIREKAP KB</h4></div>
     <div class="nav flex-column mt-3">
         <a href="dashboard_admin.php" class="nav-link"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
         <a href="admin_users.php" class="nav-link"><span class="material-symbols-outlined">people</span> Kelola Pengguna</a>
+        <a href="user_tambah.php" class="nav-link"><span class="material-symbols-outlined">person_add</span> Tambah Pengguna</a>
+        <a href="admin_acc_kader.php" class="nav-link active"><span class="material-symbols-outlined">done_all</span> Persetujuan Kader</a>
         <a href="penyuluh_laporan.php" class="nav-link"><span class="material-symbols-outlined">description</span> Laporan</a>
-        <a href="admin_rekap_honor.php" class="nav-link active"><span class="material-symbols-outlined">receipt</span> Rekap Honor</a>
+        <a href="dashboard_grafik.php" class="nav-link"><span class="material-symbols-outlined">bar_chart</span> Statistik</a>
+        <a href="admin_rekap_honor.php" class="nav-link"><span class="material-symbols-outlined">receipt</span> Rekap Honor</a>
         <a href="profil.php" class="nav-link"><span class="material-symbols-outlined">account_circle</span> Profil</a>
         <a href="logout.php" class="nav-link"><span class="material-symbols-outlined">logout</span> Logout</a>
     </div>
 </div>
+
 <div class="top-navbar">
     <button class="hamburger-btn" id="hamburgerBtn"><span class="material-symbols-outlined">menu</span></button>
-    <h5 class="mb-0">Rekap Honor Bulanan</h5>
-    <span class="ms-auto">User: <?= $_SESSION['nama_lengkap'] ?></span>
+    <h5 class="mb-0">Persetujuan Akun Kader</h5>
+    <span class="ms-auto">User: <?= $_SESSION['nama_lengkap'] ?? 'Admin' ?></span>
 </div>
+
 <div class="main-content">
-    <div class="card mb-3">
-        <div class="card-header"><h6 class="mb-0">Filter Bulan/Tahun</h6></div>
-        <div class="card-body">
-            <form method="GET" class="row g-2">
-                <div class="col-md-2"><input type="number" name="bulan" class="form-control" min="1" max="12" value="<?=$bulan_filter?>"></div>
-                <div class="col-md-2"><input type="number" name="tahun" class="form-control" value="<?=$tahun_filter?>"></div>
-                <div class="col-md-2"><button type="submit" class="btn btn-primary btn-sm">Cari</button></div>
-            </form>
-        </div>
-    </div>
     <div class="card">
-        <div class="card-header bg-primary text-white"><h5 class="mb-0">Daftar Honor Kader</h5></div>
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Daftar Kader yang Menunggu Persetujuan</h5>
+        </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead><tr><th>No</th><th>Kader</th><th>Total Data</th><th>Total Honor</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                        <?php $no=1; while($r=mysqli_fetch_assoc($query)) { $total_honor = $r['total_input'] * $tarif_per_data; ?>
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-                            <td><?=$no++?></td>
-                            <td><?=$r['kader_penginput']?></td>
-                            <td><?=$r['total_input']?></td>
-                            <td>Rp<?=number_format($total_honor,0,',','.')?></td>
-                            <td><a href="admin_bayar_honor.php?kader=<?=$r['kader_penginput']?>&bulan=<?=$bulan_filter?>&tahun=<?=$tahun_filter?>" class="btn btn-sm btn-success" onclick="return confirm('Bayar honor?')">Bayar</a></td>
+                            <th>No</th>
+                            <th>Nama Lengkap</th>
+                            <th>Username</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
                         </tr>
-                        <?php } ?>
+                    </thead>
+                    <tbody>
+                        <?php $no=1; while($row = mysqli_fetch_assoc($query)): ?>
+                        <tr>
+                            <td><?= $no++; ?></td>
+                            <td><?= $row['nama_lengkap']; ?></td>
+                            <td><code>@<?= $row['username']; ?></code></td>
+                            <td><span class="badge bg-warning">Menunggu Persetujuan</span></td>
+                            <td>
+                                <a href="admin_acc_kader.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-success" onclick="return confirm('Aktifkan akun kader ini?')">Aktifkan Akun</a>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                        <?php if(mysqli_num_rows($query) == 0) echo "<tr><td colspan='5' class='text-center text-muted py-4'>Tidak ada pendaftar baru yang menunggu persetujuan.</td></tr>"; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.getElementById('hamburgerBtn').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('active'));

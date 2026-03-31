@@ -21,8 +21,7 @@ if (isset($_POST['tambah_user'])) {
     if (mysqli_num_rows($cek) > 0) {
         $error = "Username sudah terdaftar!";
     } else {
-        $insert = mysqli_query($koneksi, "INSERT INTO users (username, nama_lengkap, password, role) 
-                                         VALUES ('$username', '$nama_lengkap', '$password', '$role')");
+        $insert = mysqli_query($koneksi, "INSERT INTO users (username, password, nama_lengkap, role) VALUES ('$username', '$password', '$nama_lengkap', '$role')");
         if ($insert) {
             $success = "User berhasil ditambahkan!";
             header("Refresh: 2; url=admin_users.php");
@@ -38,125 +37,91 @@ if (isset($_POST['tambah_user'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah User - Admin</title>
+    <title>Tambah Pengguna - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    
     <style>
-        body { background-color: #f8f9fa; font-size: 0.9rem; }
-        .sidebar { width: 260px; height: 100vh; background: #fff; border-right: 1px solid #dee2e6; position: fixed; overflow-y: auto; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #f1f1f1; text-align: center; }
-        .sidebar-header h4 { margin: 0; font-size: 18px; }
-        .nav-link { color: #333; display: flex; align-items: center; padding: 12px 20px; border-left: 4px solid transparent; transition: 0.3s; }
-        .nav-link:hover, .nav-link.active { background: #eef3ff; color: #0d6efd; border-left-color: #0d6efd; }
-        .nav-link span { margin-right: 10px; font-size: 20px; }
-        
+        body { background-color: #f8f9fa; margin: 0; }
+        .sidebar { width: 260px; height: 100vh; background: #fff; border-right: 1px solid #dee2e6; position: fixed; overflow-y: auto; z-index: 1000; transition: transform 0.3s; }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #f1f1f1; }
+        .sidebar-header h4 { margin: 0; font-size: 18px; color: #0d6efd; }
+        .nav-link { color: #333; display: flex; align-items: center; padding: 12px 20px; border-left: 4px solid transparent; transition: 0.3s; text-decoration: none; }
+        .nav-link:hover { background: #eef3ff; color: #0d6efd; border-left-color: #0d6efd; }
+        .nav-link span { margin-right: 10px; }
+        .top-navbar { background: #fff; padding: 12px 30px; border-bottom: 1px solid #dee2e6; margin-left: 260px; display: flex; justify-content: space-between; align-items: center; }
+        .hamburger-btn { display: none; background: #0d6efd; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         .main-content { margin-left: 260px; padding: 20px; }
-        .top-navbar { background: #fff; padding: 10px 30px; border-bottom: 1px solid #dee2e6; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .form-card { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .form-header { background: #0d6efd; color: white; border-radius: 10px 10px 0 0; padding: 20px; }
-        .form-body { padding: 30px; }
-        .form-label { font-weight: 600; color: #333; margin-bottom: 8px; display: block; }
-        .form-control { border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; }
-        .form-control:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); }
-        .btn-submit { background: #0d6efd; color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-weight: 600; transition: 0.3s; }
-        .btn-submit:hover { background: #0b5ed7; }
-        .btn-back { display: inline-block; margin-top: 15px; color: #0d6efd; text-decoration: none; font-weight: 600; }
-        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid; }
-        .alert-success { background: #d4edda; border-left-color: #198754; color: #155724; }
-        .alert-error { background: #f8d7da; border-left-color: #dc3545; color: #721c24; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 100%; max-width: 260px; }
+            .sidebar.active { transform: translateX(0); }
+            .top-navbar { margin-left: 0; flex-wrap: wrap; gap: 10px; }
+            .main-content { margin-left: 0; padding: 15px; }
+            .hamburger-btn { display: flex; }
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="sidebar-header">
-        <h4 class="text-primary fw-bold">bkkbn <span class="text-success">SIREKAP MKJP</span></h4>
-        <small class="text-muted">Sistem Informasi Keluarga</small>
-    </div>
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header"><h4>SIREKAP KB</h4></div>
     <div class="nav flex-column mt-3">
-        <a href="dashboard_admin.php" class="nav-link">
-            <span class="material-symbols-outlined">dashboard</span> Dashboard
-        </a>
-        <a href="admin_users.php" class="nav-link active">
-            <span class="material-symbols-outlined">group</span> User Management
-        </a>
-        <a href="logout.php" class="nav-link mt-5 text-danger">
-            <span class="material-symbols-outlined">logout</span> Keluar
-        </a>
+        <a href="dashboard_admin.php" class="nav-link"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+        <a href="admin_users.php" class="nav-link"><span class="material-symbols-outlined">people</span> Kelola Pengguna</a>
+        <a href="user_tambah.php" class="nav-link active"><span class="material-symbols-outlined">person_add</span> Tambah Pengguna</a>
+        <a href="penyuluh_laporan.php" class="nav-link"><span class="material-symbols-outlined">description</span> Laporan</a>
+        <a href="dashboard_grafik.php" class="nav-link"><span class="material-symbols-outlined">bar_chart</span> Statistik</a>
+        <a href="admin_rekap_honor.php" class="nav-link"><span class="material-symbols-outlined">receipt</span> Rekap Honor</a>
+        <a href="profil.php" class="nav-link"><span class="material-symbols-outlined">account_circle</span> Profil</a>
+        <a href="logout.php" class="nav-link"><span class="material-symbols-outlined">logout</span> Logout</a>
     </div>
 </div>
 
-<div class="main-content">
-    <div class="top-navbar">
-        <h5 class="mb-0">Tambah User Baru</h5>
-        <div class="d-flex align-items-center">
-            <span class="me-2 text-muted"><?= $_SESSION['nama_lengkap']; ?></span>
-            <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['nama_lengkap']); ?>&background=0d6efd&color=fff" width="35" class="rounded-circle">
-        </div>
-    </div>
+<div class="top-navbar">
+    <button class="hamburger-btn" id="hamburgerBtn"><span class="material-symbols-outlined">menu</span></button>
+    <h5 class="mb-0">Tambah Pengguna</h5>
+    <span class="ms-auto">User: <?= $_SESSION['nama_lengkap'] ?? 'Admin' ?></span>
+</div>
 
-    <div class="container-fluid">
-        <div class="card form-card" style="max-width: 500px;">
-            <div class="form-header">
-                <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 10px; font-size: 24px;">add_circle</span>
-                Form Tambah User
-            </div>
-            <div class="form-body">
-                <?php if($success): ?>
-                    <div class="alert alert-success">
-                        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 18px;">check_circle</span>
-                        <?= $success; ?>
-                    </div>
-                <?php endif; ?>
-                
-                <?php if($error): ?>
-                    <div class="alert alert-error">
-                        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 18px;">error</span>
-                        <?= $error; ?>
-                    </div>
-                <?php endif; ?>
-                
-                <form method="POST">
-                    <div class="form-group">
-                        <label class="form-label">Username *</label>
-                        <input type="text" name="username" class="form-control" placeholder="Username unik" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap *</label>
-                        <input type="text" name="nama_lengkap" class="form-control" placeholder="Nama lengkap pengguna" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Password *</label>
-                        <input type="password" name="password" class="form-control" placeholder="Password aman" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Role / Jabatan *</label>
-                        <select name="role" class="form-control" required>
-                            <option value="">-- Pilih Role --</option>
-                            <option value="penyuluh">Penyuluh KB</option>
-                            <option value="kader">Kader</option>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" name="tambah_user" class="btn-submit">
-                        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">save</span>
-                        Simpan User Baru
-                    </button>
-                    
-                    <a href="admin_users.php" class="btn-back">
-                        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 5px; font-size: 18px;">arrow_back</span>
-                        Kembali ke Daftar
-                    </a>
-                </form>
-            </div>
+<div class="main-content">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Formulir Tambah Pengguna</h5>
+        </div>
+        <div class="card-body">
+            <?php if ($error) { echo "<div class='alert alert-danger'>$error</div>"; } ?>
+            <?php if ($success) { echo "<div class='alert alert-success'>$success</div>"; } ?>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" class="form-control" name="nama_lengkap" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Role</label>
+                    <select class="form-control" name="role" required>
+                        <option value="kader">Kader</option>
+                        <option value="penyuluh">Penyuluh</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" name="tambah_user" class="btn btn-primary">Tambah User</button>
+            </form>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('hamburgerBtn').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('active'));
+    document.querySelector('.main-content').addEventListener('click', () => { if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active'); });
+</script>
 </body>
 </html>

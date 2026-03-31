@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 29, 2026 at 11:11 AM
+-- Generation Time: Mar 31, 2026 at 02:05 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.12
 
@@ -53,20 +53,21 @@ CREATE TABLE `users` (
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `nama_lengkap` varchar(100) DEFAULT NULL,
-  `role` enum('admin','penyuluh','kader') NOT NULL
+  `role` enum('admin','penyuluh','kader') NOT NULL,
+  `is_active` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `role`) VALUES
-(7, 'HRD', '$2y$10$5w1OwYxcXCyLeYh6rULWOOEudhcnPgKLyBj1cbM1doIElt0X5Bvri', 'sss', 'penyuluh'),
-(8, 'Kader', '$2y$10$OYAf4Oh17u2GYHK0xLknleAsKhSbDcb/wllPNDsTmS6digIBnEZqa', 'mayati', 'penyuluh'),
-(9, 'mm', '$2y$10$fol6BoJe1OoeP3A2H3v4NOni4tHghxdfKfKDh6fVnyen.woO917tu', 'nnn', 'kader'),
-(11, 'admin', '$2y$10$mptYaCFmRrCEZL2Obxu3D.TktW7sQLdPF9csgPU1jii7.fRarPUqi', 'Administrator Utama', 'admin'),
-(12, 'ss', '$2y$10$ZPhqwsMmiFg14C2eOBFmc.urq4SIIcuCQQ6yg8QfdiCCAHdR5woHu', 'ss', 'penyuluh'),
-(13, 'sas', '$2y$10$m/ELfeKO3pQCoLmF1DkjluNR93uTf93KMUC54yEVU323IUOKtDxBy', 'sasa', 'kader');
+INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `role`, `is_active`) VALUES
+(7, 'HRD', '$2y$10$5w1OwYxcXCyLeYh6rULWOOEudhcnPgKLyBj1cbM1doIElt0X5Bvri', 'sss', 'penyuluh', 0),
+(8, 'Kader', '$2y$10$OYAf4Oh17u2GYHK0xLknleAsKhSbDcb/wllPNDsTmS6digIBnEZqa', 'mayati', 'penyuluh', 0),
+(9, 'mm', '$2y$10$fol6BoJe1OoeP3A2H3v4NOni4tHghxdfKfKDh6fVnyen.woO917tu', 'nnn', 'kader', 1),
+(11, 'admin', '$2y$10$mptYaCFmRrCEZL2Obxu3D.TktW7sQLdPF9csgPU1jii7.fRarPUqi', 'Administrator Utama', 'admin', 0),
+(12, 'ss', '$2y$10$ZPhqwsMmiFg14C2eOBFmc.urq4SIIcuCQQ6yg8QfdiCCAHdR5woHu', 'ss', 'penyuluh', 0),
+(13, 'sas', '$2y$10$m/ELfeKO3pQCoLmF1DkjluNR93uTf93KMUC54yEVU323IUOKtDxBy', 'sasa', 'kader', 1);
 
 -- --------------------------------------------------------
 
@@ -77,7 +78,9 @@ INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `role`) VALUE
 CREATE TABLE `warga_kb` (
   `id` int(11) NOT NULL,
   `nama_istri` varchar(100) DEFAULT NULL,
+  `nik_istri` varchar(16) DEFAULT NULL,
   `nama_suami` varchar(100) DEFAULT NULL,
+  `nik_suami` varchar(16) DEFAULT NULL,
   `jumlah_anak` int(11) DEFAULT NULL,
   `metode_kontrasepsi` varchar(50) DEFAULT NULL,
   `lokasi` varchar(100) DEFAULT NULL,
@@ -91,6 +94,15 @@ CREATE TABLE `warga_kb` (
   `keterangan` text DEFAULT NULL,
   `foto_kunjungan` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `warga_kb`
+--
+
+INSERT INTO `warga_kb` (`id`, `nama_istri`, `nik_istri`, `nama_suami`, `nik_suami`, `jumlah_anak`, `metode_kontrasepsi`, `lokasi`, `tanggal_kunjungan`, `kader_penginput`, `nik_kader`, `suami_kader`, `nik_suami_kader`, `norek_kader`, `status_bayar`, `keterangan`, `foto_kunjungan`) VALUES
+(6, 'dfsfd', NULL, 'fdsfdsf', NULL, 34, 'Implan', 'ffd', '2026-03-31', 'sasa', '434324343243243', 'xccxcx', '3423424324324', '423424', 0, '', '31032026134759_mobil-keluarga-ternyaman.png'),
+(7, 'sadsad', NULL, 'sadsad', NULL, 2, 'IUD', '3scdsc', '2026-03-31', 'sas', '32232', 'cvvcv', '234324', '234324', 0, '', ''),
+(8, 'sdsd', '234234', 'dsfdsf', '24324', 23, 'Implan', '32dscdsc', '2026-03-31', 'sas', '32232', 'cvvcv', '234324', '234324', 0, '', '');
 
 --
 -- Indexes for dumped tables
@@ -135,7 +147,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `warga_kb`
 --
 ALTER TABLE `warga_kb`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

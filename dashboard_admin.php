@@ -27,127 +27,156 @@ $total_honor_unpaid = $honor_result['total'] * $tarif_per_data;
     <title>Dashboard Admin - Sistem KB</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    
     <style>
-        body { background-color: #f8f9fa; font-size: 0.9rem; }
-        .sidebar { width: 260px; height: 100vh; background: #fff; border-right: 1px solid #dee2e6; position: fixed; overflow-y: auto; }
+        body { background-color: #f8f9fa; font-size: 0.9rem; margin: 0; }
+        .sidebar { 
+            width: 260px; 
+            height: 100vh; 
+            background: #fff; 
+            border-right: 1px solid #dee2e6; 
+            position: fixed; 
+            overflow-y: auto; 
+            z-index: 1000; 
+            transition: transform 0.3s ease;
+            top: 0;
+            left: 0;
+        }
+        .sidebar.hidden { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
         .sidebar-header { padding: 20px; border-bottom: 1px solid #f1f1f1; text-align: center; }
-        .sidebar-header h4 { margin: 0; font-size: 18px; }
-        .nav-link { color: #333; display: flex; align-items: center; padding: 12px 20px; border-left: 4px solid transparent; transition: 0.3s; }
+        .sidebar-header h4 { margin: 0; font-size: 18px; color: #0d6efd; font-weight: 700; }
+        .nav-link { color: #333; display: flex; align-items: center; padding: 12px 20px; border-left: 4px solid transparent; transition: 0.3s; text-decoration: none; }
         .nav-link:hover, .nav-link.active { background: #eef3ff; color: #0d6efd; border-left-color: #0d6efd; }
         .nav-link span { margin-right: 10px; font-size: 20px; }
-        .nav-link.text-danger:hover { background: #ffe0e0; }
+        .section-header { color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase; padding: 15px 20px 5px; }
+        .top-navbar { background: #fff; padding: 12px 30px; border-bottom: 1px solid #dee2e6; margin-left: 260px; display: flex; justify-content: space-between; align-items: center; transition: margin-left 0.3s ease; }
+        .hamburger-btn { display: none; background: #0d6efd; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        .hamburger-btn:hover { background: #0b5ed7; }
+        .main-content { margin-left: 260px; padding: 20px; transition: margin-left 0.3s ease; }
+        .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .stat-number { font-size: 32px; font-weight: bold; color: #0d6efd; }
+        .stat-label { color: #6c757d; font-size: 14px; margin-top: 5px; }
         
-        .main-content { margin-left: 260px; padding: 20px; }
-        .top-navbar { background: #fff; padding: 10px 30px; border-bottom: 1px solid #dee2e6; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .card-custom { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .stat-box { padding: 25px; border-radius: 10px; color: white; text-align: center; }
-        .stat-box h3 { font-size: 32px; margin: 10px 0; font-weight: bold; }
-        .stat-box p { margin: 0; font-size: 14px; opacity: 0.9; }
-        .stat-primary { background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%); }
-        .stat-success { background: linear-gradient(135deg, #198754 0%, #157347 100%); }
-        .stat-warning { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); }
-        .search-box { background: #1a4d8f; color: white; border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; font-weight: 500; }
-        .section-header { color: #495057; font-size: 13px; font-weight: 600; text-transform: uppercase; padding: 10px 20px 5px; margin-top: 15px; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 100%; max-width: 260px; }
+            .sidebar.active { transform: translateX(0); }
+            .top-navbar { margin-left: 0; flex-wrap: wrap; gap: 10px; }
+            .main-content { margin-left: 0; padding: 15px; }
+            .hamburger-btn { display: flex; align-items: center; justify-content: center; }
+            .stat-number { font-size: 24px; }
+        }
+        @media (max-width: 480px) {
+            .top-navbar { padding: 10px 15px; font-size: 0.85rem; }
+            .main-content { padding: 10px; }
+            .stat-card { padding: 15px; }
+            .stat-number { font-size: 20px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <h4 class="text-primary fw-bold">bkkbn <span class="text-success">SIREKAP MKJP</span></h4>
-        <small class="text-muted">Sistem Informasi Keluarga</small>
+        <h4>SIREKAP KB</h4>
     </div>
     <div class="nav flex-column mt-3">
-        <div class="section-header">DASHBOARD</div>
         <a href="dashboard_admin.php" class="nav-link active">
-            <span class="material-symbols-outlined">dashboard</span> Dashboard
+            <span class="material-symbols-outlined">dashboard</span>
+            Dashboard
         </a>
-        
-        <div class="section-header">KELOLA</div>
         <a href="admin_users.php" class="nav-link">
-            <span class="material-symbols-outlined">group</span> User Management
+            <span class="material-symbols-outlined">people</span>
+            Kelola Pengguna
         </a>
-        <a href="admin_rekap_honor.php" class="nav-link">
-            <span class="material-symbols-outlined">payments</span> Rekap Honor Kader
+        <a href="admin_acc_kader.php" class="nav-link">
+            <span class="material-symbols-outlined">people</span>
+            Kelola Kader
         </a>
-        
-        <div class="section-header">LAPORAN</div>
+        <a href="user_tambah.php" class="nav-link">
+            <span class="material-symbols-outlined">person_add</span>
+            Tambah Pengguna
+        </a>
         <a href="penyuluh_laporan.php" class="nav-link">
-            <span class="material-symbols-outlined">summarize</span> Rekapitulasi Data
+            <span class="material-symbols-outlined">description</span>
+            Laporan
         </a>
         <a href="dashboard_grafik.php" class="nav-link">
-            <span class="material-symbols-outlined">bar_chart</span> Statistik Grafik
+            <span class="material-symbols-outlined">bar_chart</span>
+            Statistik
         </a>
-        
-        <div class="section-header">AKUN</div>
+        <a href="admin_rekap_honor.php" class="nav-link">
+            <span class="material-symbols-outlined">receipt</span>
+            Rekap Honor
+        </a>
+        <div class="section-header">PROFIL</div>
         <a href="profil.php" class="nav-link">
-            <span class="material-symbols-outlined">person</span> Profil Saya
+            <span class="material-symbols-outlined">account_circle</span>
+            Profil Saya
         </a>
-        
-        <a href="logout.php" class="nav-link mt-5 text-danger">
-            <span class="material-symbols-outlined">logout</span> Keluar
+        <a href="logout.php" class="nav-link">
+            <span class="material-symbols-outlined">logout</span>
+            Logout
         </a>
     </div>
 </div>
 
-<div class="main-content">
-    <div class="top-navbar">
-        <h5 class="mb-0">Dashboard Utama</h5>
-        <div class="d-flex align-items-center">
-            <span class="me-2 text-muted"><?= $_SESSION['nama_lengkap']; ?></span>
-            <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['nama_lengkap']); ?>&background=0d6efd&color=fff" width="35" class="rounded-circle">
-        </div>
+<!-- Top Navbar -->
+<div class="top-navbar">
+    <button class="hamburger-btn" id="hamburgerBtn">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+    <div>
+        <h5 class="mb-0">Dashboard Admin</h5>
     </div>
+    <div class="ms-auto">
+        <span class="me-3">User: <?= $_SESSION['nama_lengkap'] ?? 'Admin' ?></span>
+    </div>
+</div>
 
+<!-- Main Content -->
+<div class="main-content">
     <div class="container-fluid">
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="stat-box stat-primary">
-                    <span class="material-symbols-outlined" style="font-size: 40px;">groups</span>
-                    <h3><?= $total_user; ?></h3>
-                    <p>Total Pengguna Sistem</p>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-number"><?= $total_user ?></div>
+                    <div class="stat-label">Total Pengguna</div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-box stat-success">
-                    <span class="material-symbols-outlined" style="font-size: 40px;">home_work</span>
-                    <h3><?= $total_data; ?></h3>
-                    <p>Total Data Warga Terinput</p>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-number"><?= $total_data ?></div>
+                    <div class="stat-label">Data Warga KB</div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-box stat-warning">
-                    <span class="material-symbols-outlined" style="font-size: 40px;">person</span>
-                    <h3><?= $total_kader; ?></h3>
-                    <p>Kader Aktif</p>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-number"><?= $total_kader ?></div>
+                    <div class="stat-label">Total Kader</div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-box" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);">
-                    <span class="material-symbols-outlined" style="font-size: 40px;">payments</span>
-                    <h3 style="font-size: 24px;">Rp<?= number_format($total_honor_unpaid / 1000000, 1, ',', '.'); ?>jt</h3>
-                    <p>Honor Belum Dibayar</p>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-number">Rp<?= number_format($total_honor_unpaid, 0, ',', '.') ?></div>
+                    <div class="stat-label">Honor Belum Bayar</div>
                 </div>
-            </div>
-        </div>
-
-        <div class="card card-custom">
-            <div class="search-box">
-                <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">info</span> Informasi & Panduan
-            </div>
-            <div class="card-body">
-                <ul class="mb-0">
-                    <li><strong>User Management:</strong> Tambah, edit, atau hapus akun Penyuluh dan Kader.</li>
-                    <li><strong>Rekapitulasi Data:</strong> Lihat semua laporan dari seluruh Kader dalam satu tampilan.</li>
-                    <li><strong>Statistik Grafik:</strong> Analisis visual data penyuluhan keluarga berencana.</li>
-                    <li><strong>Keamanan:</strong> Pastikan untuk logout setelah selesai menggunakan sistem.</li>
-                </ul>
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('hamburgerBtn').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('active');
+    });
+    
+    document.querySelector('.main-content').addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.remove('active');
+        }
+    });
+</script>
 </body>
 </html>
