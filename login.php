@@ -151,43 +151,6 @@ if (isset($_POST['login'])) {
             line-height: 1.5;
         }
 
-        .register-link {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid #eee;
-        }
-
-        .register-link p {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 12px;
-        }
-
-        .btn-register-custom {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: #28a745;
-            color: white;
-            padding: 11px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-register-custom:hover {
-            background: #218838;
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
-            color: white;
-        }
-
         @media (max-width: 480px) {
             .login-container { 
                 padding: 20px; 
@@ -220,14 +183,6 @@ if (isset($_POST['login'])) {
             MASUK
         </button>
     </form>
-
-    <div class="register-link">
-        <p>Belum punya akun Kader?</p>
-        <a href="register.php" class="btn-register-custom">
-            <span class="material-symbols-outlined" style="font-size: 18px;">person_add</span>
-            Daftar Akun Kader
-        </a>
-    </div>
 
     <div class="demo-info">
         <strong>🔐 Akun Demo:</strong>
